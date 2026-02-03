@@ -8,11 +8,12 @@
  *   github-username-migrator [command] [options]
  *
  * Commands:
- *   run            Start the interactive migration wizard
+ *   run            Start the interactive migration wizard (dry run by default)
  *
  * Options:
  *   -h, --help     Show help information
  *   -v, --version  Show version number
+ *   -a, --apply    Actually apply changes (without this flag, runs in dry run mode)
  *
  * The tool will interactively prompt for:
  * - Old GitHub username (to find)
@@ -37,6 +38,7 @@ const args = process.argv.slice(2);
 const showHelp = args.includes('-h') || args.includes('--help') || args.length === 0;
 const showVersion = args.includes('-v') || args.includes('--version');
 const runApp = args.includes('run') || args.includes('--run');
+const applyChanges = args.includes('--apply') || args.includes('-a');
 
 // Handle graceful exit
 process.on('SIGINT', () => {
@@ -49,8 +51,8 @@ process.on('SIGTERM', () => {
 
 // Render based on arguments
 if (runApp) {
-  // Run the main application
-  render(<App />);
+  // Run the main application (dry run by default, use --apply to actually make changes)
+  render(<App dryRun={!applyChanges} />);
 } else if (showVersion && !showHelp) {
   const { unmount } = render(<Version />);
   // Exit after rendering version

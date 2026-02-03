@@ -3,6 +3,7 @@
  */
 
 export { Confirmation, type ConfirmationProps } from './confirmation';
+export { DryRunSummary, type DryRunSummaryProps } from './dry-run-summary';
 export { Help, Version } from './help';
 export { MigrationProgress, type MigrationProgressProps } from './migration-progress';
 export { RepoList, type RepoListProps } from './repo-list';

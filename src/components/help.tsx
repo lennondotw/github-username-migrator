@@ -73,7 +73,12 @@ export const Help: React.FC = () => {
           <Box marginTop={1}>
             <Text color="green">$ </Text>
             <Text color="cyan">github-username-migrator run</Text>
-            <Text dimColor>{'   '}# Start migration</Text>
+            <Text dimColor>{'          '}# Dry run (preview only)</Text>
+          </Box>
+          <Box>
+            <Text color="green">$ </Text>
+            <Text color="cyan">github-username-migrator run --apply</Text>
+            <Text dimColor>{'  '}# Apply changes</Text>
           </Box>
         </Box>
       </Box>
@@ -86,7 +91,8 @@ export const Help: React.FC = () => {
         <Box marginLeft={2} flexDirection="column">
           <Box>
             <Text color="green">run{'             '}</Text>
-            <Text>Start the interactive migration wizard</Text>
+            <Text>Start migration wizard </Text>
+            <Text color="yellow">(dry run by default)</Text>
           </Box>
         </Box>
       </Box>
@@ -98,6 +104,11 @@ export const Help: React.FC = () => {
         </Text>
         <Box marginLeft={2} flexDirection="column">
           <Box>
+            <Text color="yellow">-a, --apply{'     '}</Text>
+            <Text>Actually apply changes </Text>
+            <Text color="red">(required to modify files)</Text>
+          </Box>
+          <Box>
             <Text color="yellow">-h, --help{'      '}</Text>
             <Text>Show this help message</Text>
           </Box>
@@ -105,6 +116,31 @@ export const Help: React.FC = () => {
             <Text color="yellow">-v, --version{'   '}</Text>
             <Text>Show version number</Text>
           </Box>
+        </Box>
+      </Box>
+
+      {/* Safety Note */}
+      <Box marginBottom={1} flexDirection="column">
+        <Text bold color="white">
+          SAFETY
+        </Text>
+        <Box marginLeft={2} flexDirection="column">
+          <Text>
+            <Text color="yellow">⚠ </Text>
+            <Text>By default, runs in </Text>
+            <Text color="yellow" bold>
+              dry run mode
+            </Text>
+            <Text> (no changes made)</Text>
+          </Text>
+          <Text>
+            <Text color="green">✓ </Text>
+            <Text>Use </Text>
+            <Text color="green" bold>
+              --apply
+            </Text>
+            <Text> flag to actually modify git remotes</Text>
+          </Text>
         </Box>
       </Box>
 

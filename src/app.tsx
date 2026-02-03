@@ -10,6 +10,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   Confirmation,
+  DryRunSummary,
   MigrationProgress,
   RepoList,
   ResultSummary,
@@ -25,14 +26,25 @@ import type {
   ScanProgress as ScanProgressType,
 } from './types';
 
-type AppPhase = 'welcome' | 'input' | 'scanning' | 'review' | 'migrating' | 'complete' | 'cancelled' | 'no-matches';
+type AppPhase =
+  | 'welcome'
+  | 'input'
+  | 'scanning'
+  | 'review'
+  | 'migrating'
+  | 'complete'
+  | 'cancelled'
+  | 'no-matches'
+  | 'dry-run-complete';
 
 interface AppProps {
   /** Override the scan root directory (for testing) */
   scanRoot?: string;
+  /** If true, only show what would be changed without applying (default: true) */
+  dryRun?: boolean;
 }
 
-export const App: React.FC<AppProps> = ({ scanRoot }) => {
+export const App: React.FC<AppProps> = ({ scanRoot, dryRun = true }) => {
   const { exit } = useApp();
   const [phase, setPhase] = useState<AppPhase>('welcome');
   const [oldUsername, setOldUsername] = useState('');
@@ -63,11 +75,18 @@ export const App: React.FC<AppProps> = ({ scanRoot }) => {
       if (phase === 'no-matches' && (key.return || input === 'q')) {
         exit();
       }
-      if (phase === 'complete' || phase === 'cancelled') {
+      if (phase === 'complete' || phase === 'cancelled' || phase === 'dry-run-complete') {
         exit();
       }
     },
-    { isActive: phase === 'welcome' || phase === 'no-matches' || phase === 'complete' || phase === 'cancelled' }
+    {
+      isActive:
+        phase === 'welcome' ||
+        phase === 'no-matches' ||
+        phase === 'complete' ||
+        phase === 'cancelled' ||
+        phase === 'dry-run-complete',
+    }
   );
 
   // Handle username submission
@@ -120,8 +139,14 @@ export const App: React.FC<AppProps> = ({ scanRoot }) => {
 
   // Handle migration confirmation
   const handleConfirmMigration = useCallback(() => {
-    setPhase('migrating');
-  }, []);
+    if (dryRun) {
+      // In dry run mode, show summary without applying changes
+      setPhase('dry-run-complete');
+    } else {
+      // Actually perform migration
+      setPhase('migrating');
+    }
+  }, [dryRun]);
 
   // Handle migration cancellation
   const handleCancelMigration = useCallback(() => {
@@ -194,6 +219,18 @@ export const App: React.FC<AppProps> = ({ scanRoot }) => {
 
     case 'complete':
       return <ResultSummary results={migrationProgress.results} logPath={logPath} />;
+
+    case 'dry-run-complete':
+      return (
+        <DryRunSummary
+          repositories={matchedRepos}
+          oldUsername={oldUsername}
+          newUsername={newUsername}
+          onExit={() => {
+            exit();
+          }}
+        />
+      );
 
     case 'cancelled':
       return (
