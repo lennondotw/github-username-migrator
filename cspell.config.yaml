@@ -9,6 +9,17 @@ words:
   - outfile
   - homedir
   - subdir
+  - olduser
+  - newuser
+  - testuser
+  - rustup
+  - venv
+  - pycache
+  - virtualenvs
+  - fseventsd
+  - repositoryformatversion
+  - filemode
+  - reekystive
 flagWords:
   - blacklist -> blocklist
   - whitelist -> allowlist

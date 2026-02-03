@@ -19,6 +19,7 @@ images/
 !.vscode/settings.json
 !.vscode/extensions.json
 .idea/
+.cursor/
 
 # macOS
 .DS_Store
