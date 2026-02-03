@@ -4,6 +4,10 @@ A cross-platform CLI tool to scan all git repositories and migrate GitHub userna
 
 Perfect for when you change your GitHub username and need to update all your local repositories.
 
+<img width="3246" height="2536" alt="image" src="https://github.com/user-attachments/assets/109d2153-3fa2-48bb-8640-9ec0b9b48cee" />
+
+<img width="3242" height="2468" alt="image" src="https://github.com/user-attachments/assets/dfe25a8c-a4a3-4b4c-976b-efc7997934ee" />
+
 ## Features
 
 - **Recursive Scanning**: Scans all `.git` repositories from your home directory
