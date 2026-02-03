@@ -8,6 +8,12 @@ Perfect for when you change your GitHub username and need to update all your loc
 
 <img width="3242" height="2468" alt="image" src="https://github.com/user-attachments/assets/dfe25a8c-a4a3-4b4c-976b-efc7997934ee" />
 
+## Why This Tool?
+
+GitHub does not permanently redirect your old username — once someone else claims it, all your local repositories using the old remote URLs will fail with `Repository not found`.
+
+Manually running `git remote set-url` on dozens of repositories is tedious. This tool scans your system and updates them all at once.
+
 ## Features
 
 - **Recursive Scanning**: Scans all `.git` repositories from your home directory
