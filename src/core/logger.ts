@@ -25,12 +25,24 @@ export function getLogsDir(): string {
 }
 
 /**
+ * Format timestamp as YYYYMMDD-HHMMSS
+ */
+function formatTimestamp(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${year}${month}${day}-${hours}${minutes}${seconds}`;
+}
+
+/**
  * Generate a timestamped log filename
+ * Format: migration-YYYYMMDD-HHMMSS.log
  */
 export function generateLogFilename(): string {
-  const now = new Date();
-  const timestamp = now.toISOString().replace(/[:.]/g, '-').replace('T', '_').slice(0, 19);
-  return `migration-${timestamp}.log`;
+  return `migration-${formatTimestamp(new Date())}.log`;
 }
 
 /**

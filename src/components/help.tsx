@@ -104,16 +104,28 @@ export const Help: React.FC = () => {
         </Text>
         <Box marginLeft={2} flexDirection="column">
           <Box>
-            <Text color="yellow">-a, --apply{'     '}</Text>
+            <Text color="yellow">-a, --apply{'         '}</Text>
             <Text>Actually apply changes </Text>
-            <Text color="red">(required to modify files)</Text>
+            <Text color="red">(required to modify)</Text>
           </Box>
           <Box>
-            <Text color="yellow">-h, --help{'      '}</Text>
+            <Text color="yellow">-r, --root </Text>
+            <Text color="cyan">&lt;path&gt;</Text>
+            <Text color="yellow">{'   '}</Text>
+            <Text>Custom scan root directory</Text>
+          </Box>
+          <Box>
+            <Text color="yellow">-e, --exclude </Text>
+            <Text color="cyan">&lt;dirs&gt;</Text>
+            <Text>{'  '}</Text>
+            <Text>Extra dirs to exclude (comma-sep)</Text>
+          </Box>
+          <Box>
+            <Text color="yellow">-h, --help{'          '}</Text>
             <Text>Show this help message</Text>
           </Box>
           <Box>
-            <Text color="yellow">-v, --version{'   '}</Text>
+            <Text color="yellow">-v, --version{'       '}</Text>
             <Text>Show version number</Text>
           </Box>
         </Box>

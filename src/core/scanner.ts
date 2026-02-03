@@ -17,18 +17,14 @@ import { findMatchingRemotes, getRemoteUrls } from './git-remote';
  * Options for the scanner
  */
 export interface ScanOptions {
-  /** Root directory to scan (defaults to home directory) */
-  rootDir?: string;
-  /** Old GitHub username to search for */
-  oldUsername: string;
-  /** New GitHub username to replace with */
-  newUsername: string;
   /** Callback for progress updates */
   onProgress?: (progress: ScanProgress) => void;
   /** Maximum depth to scan (default: 20) */
   maxDepth?: number;
   /** Abort signal for cancellation */
   signal?: AbortSignal;
+  /** Additional directories to exclude (by name) */
+  extraExcludes?: string[];
 }
 
 /**
@@ -51,7 +47,8 @@ async function* scanDirectory(
   dirPath: string,
   depth: number,
   maxDepth: number,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  extraExcludes: string[] = []
 ): AsyncGenerator<{ type: 'dir' } | { type: 'repo'; path: string } | { type: 'error'; path: string; message: string }> {
   if (signal?.aborted) {
     return;
@@ -106,18 +103,28 @@ async function* scanDirectory(
       continue;
     }
 
+    // Skip extra excluded directories
+    if (extraExcludes.includes(name)) {
+      continue;
+    }
+
     const fullPath = join(dirPath, name);
 
     // Recursively scan subdirectory
-    yield* scanDirectory(fullPath, depth + 1, maxDepth, signal);
+    yield* scanDirectory(fullPath, depth + 1, maxDepth, signal, extraExcludes);
   }
 }
 
 /**
  * Scan for git repositories and find those matching the username
  */
-export async function scanForRepositories(options: ScanOptions): Promise<ScanResult> {
-  const { rootDir = homedir(), oldUsername, newUsername, onProgress, maxDepth = 20, signal } = options;
+export async function scanForRepositories(
+  rootDir: string,
+  oldUsername: string,
+  newUsername: string,
+  options: ScanOptions = {}
+): Promise<ScanResult> {
+  const { onProgress, maxDepth = 20, signal, extraExcludes = [] } = options;
 
   const startTime = Date.now();
   const matchedRepositories: MatchedRepository[] = [];
@@ -143,7 +150,7 @@ export async function scanForRepositories(options: ScanOptions): Promise<ScanRes
   };
 
   // Scan directories
-  for await (const event of scanDirectory(rootDir, 0, maxDepth, signal)) {
+  for await (const event of scanDirectory(rootDir, 0, maxDepth, signal, extraExcludes)) {
     if (signal?.aborted) {
       break;
     }

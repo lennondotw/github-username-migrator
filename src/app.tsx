@@ -38,13 +38,22 @@ type AppPhase =
   | 'dry-run-complete';
 
 interface AppProps {
-  /** Override the scan root directory (for testing) */
+  /** Override the scan root directory (default: home directory) */
   scanRoot?: string;
   /** If true, only show what would be changed without applying (default: true) */
   dryRun?: boolean;
+  /** Additional directories to exclude from scanning */
+  extraExcludes?: string[];
+  /** Custom regex pattern for matching URLs (advanced) */
+  customPattern?: string;
 }
 
-export const App: React.FC<AppProps> = ({ scanRoot, dryRun = true }) => {
+export const App: React.FC<AppProps> = ({
+  scanRoot,
+  dryRun = true,
+  extraExcludes = [],
+  customPattern: _customPattern,
+}) => {
   const { exit } = useApp();
   const [phase, setPhase] = useState<AppPhase>('welcome');
   const [oldUsername, setOldUsername] = useState('');
@@ -108,6 +117,7 @@ export const App: React.FC<AppProps> = ({ scanRoot, dryRun = true }) => {
         const root = scanRoot ?? homedir();
         const result = await scanForRepositories(root, oldUsername, newUsername, {
           signal: controller.signal,
+          extraExcludes,
           onProgress: (progress: ScanProgressType) => {
             setScanProgress(progress);
           },
@@ -135,7 +145,7 @@ export const App: React.FC<AppProps> = ({ scanRoot, dryRun = true }) => {
     return () => {
       controller.abort();
     };
-  }, [phase, oldUsername, newUsername, scanRoot]);
+  }, [phase, oldUsername, newUsername, scanRoot, extraExcludes]);
 
   // Handle migration confirmation
   const handleConfirmMigration = useCallback(() => {

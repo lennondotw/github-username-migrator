@@ -31,7 +31,8 @@ describe('logger', () => {
   describe('generateLogFilename', () => {
     it('should generate a timestamped filename', () => {
       const filename = generateLogFilename();
-      expect(filename).toMatch(/^migration-\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.log$/);
+      // Format: migration-YYYYMMDD-HHMMSS.log
+      expect(filename).toMatch(/^migration-\d{8}-\d{6}\.log$/);
     });
 
     it('should generate unique filenames', async () => {

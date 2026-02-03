@@ -23,11 +23,7 @@ describe('scanner', () => {
         { path: 'project-c', remotes: { origin: 'git@github.com:other/c.git' } },
       ]);
 
-      const result = await scanForRepositories({
-        rootDir: testDir.basePath,
-        oldUsername: 'targetuser',
-        newUsername: 'newuser',
-      });
+      const result = await scanForRepositories(testDir.basePath, 'targetuser', 'newuser');
 
       expect(result.repositoriesFound).toBe(3);
       expect(result.matchedRepositories).toHaveLength(2);
@@ -41,11 +37,7 @@ describe('scanner', () => {
         { path: 'level1/level2/project', remotes: { origin: 'git@github.com:targetuser/nested.git' } },
       ]);
 
-      const result = await scanForRepositories({
-        rootDir: testDir.basePath,
-        oldUsername: 'targetuser',
-        newUsername: 'newuser',
-      });
+      const result = await scanForRepositories(testDir.basePath, 'targetuser', 'newuser');
 
       expect(result.matchedRepositories).toHaveLength(1);
       expect(result.matchedRepositories[0]?.path).toBe(join(testDir.basePath, 'level1/level2/project'));
@@ -54,11 +46,7 @@ describe('scanner', () => {
     it('should return empty array when no matches found', async () => {
       testDir = await createTestDirectory([{ path: 'project', remotes: { origin: 'git@github.com:other/repo.git' } }]);
 
-      const result = await scanForRepositories({
-        rootDir: testDir.basePath,
-        oldUsername: 'targetuser',
-        newUsername: 'newuser',
-      });
+      const result = await scanForRepositories(testDir.basePath, 'targetuser', 'newuser');
 
       expect(result.repositoriesFound).toBe(1);
       expect(result.matchedRepositories).toHaveLength(0);
@@ -77,11 +65,7 @@ describe('scanner', () => {
         '[remote "origin"]\n\turl = git@github.com:targetuser/ignored.git\n'
       );
 
-      const result = await scanForRepositories({
-        rootDir: testDir.basePath,
-        oldUsername: 'targetuser',
-        newUsername: 'newuser',
-      });
+      const result = await scanForRepositories(testDir.basePath, 'targetuser', 'newuser');
 
       // Should only find the main project, not the one in node_modules
       expect(result.matchedRepositories).toHaveLength(1);
@@ -95,10 +79,7 @@ describe('scanner', () => {
 
       const progressCalls: number[] = [];
 
-      await scanForRepositories({
-        rootDir: testDir.basePath,
-        oldUsername: 'targetuser',
-        newUsername: 'newuser',
+      await scanForRepositories(testDir.basePath, 'targetuser', 'newuser', {
         onProgress: (progress) => {
           progressCalls.push(progress.repositoriesFound);
         },
@@ -113,10 +94,7 @@ describe('scanner', () => {
         { path: 'level1/level2/level3/level4/project', remotes: { origin: 'git@github.com:targetuser/deep.git' } },
       ]);
 
-      const result = await scanForRepositories({
-        rootDir: testDir.basePath,
-        oldUsername: 'targetuser',
-        newUsername: 'newuser',
+      const result = await scanForRepositories(testDir.basePath, 'targetuser', 'newuser', {
         maxDepth: 2,
       });
 
@@ -125,11 +103,7 @@ describe('scanner', () => {
     });
 
     it('should handle errors gracefully', async () => {
-      const result = await scanForRepositories({
-        rootDir: '/non/existent/path',
-        oldUsername: 'targetuser',
-        newUsername: 'newuser',
-      });
+      const result = await scanForRepositories('/non/existent/path', 'targetuser', 'newuser');
 
       expect(result.errors.length).toBeGreaterThan(0);
       expect(result.matchedRepositories).toHaveLength(0);
@@ -140,11 +114,7 @@ describe('scanner', () => {
         { path: 'project', remotes: { origin: 'git@github.com:olduser/repo.git' } },
       ]);
 
-      const result = await scanForRepositories({
-        rootDir: testDir.basePath,
-        oldUsername: 'olduser',
-        newUsername: 'newuser',
-      });
+      const result = await scanForRepositories(testDir.basePath, 'olduser', 'newuser');
 
       expect(result.matchedRepositories).toHaveLength(1);
       expect(result.matchedRepositories[0]?.matchedRemotes[0]?.newUrl).toBe('git@github.com:newuser/repo.git');
@@ -161,10 +131,7 @@ describe('scanner', () => {
       // Abort immediately
       controller.abort();
 
-      const result = await scanForRepositories({
-        rootDir: testDir.basePath,
-        oldUsername: 'targetuser',
-        newUsername: 'newuser',
+      const result = await scanForRepositories(testDir.basePath, 'targetuser', 'newuser', {
         signal: controller.signal,
       });
 
