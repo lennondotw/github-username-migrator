@@ -19,18 +19,23 @@ jobs:
           - target: bun-linux-x64
             os: ubuntu-latest
             artifact: github-username-migrator-linux-x64
+            build-target: linux-x64
           - target: bun-linux-arm64
             os: ubuntu-latest
             artifact: github-username-migrator-linux-arm64
+            build-target: linux-arm64
           - target: bun-darwin-x64
             os: macos-latest
             artifact: github-username-migrator-darwin-x64
+            build-target: darwin-x64
           - target: bun-darwin-arm64
             os: macos-latest
             artifact: github-username-migrator-darwin-arm64
+            build-target: darwin-arm64
           - target: bun-windows-x64
             os: windows-latest
             artifact: github-username-migrator-windows-x64.exe
+            build-target: windows-x64
           # Note: bun-windows-arm64 is not currently supported by Bun
     steps:
       - name: Checkout
@@ -53,8 +58,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build binary
-        run: bun build src/index.tsx --compile --target=${{ matrix.target }} --outfile=${{ matrix.artifact }}
+      - name: Build binary (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          chmod +x scripts/build.sh
+          bash scripts/build.sh ${{ matrix.build-target }}
+          mv dist/${{ matrix.artifact }} .
+
+      - name: Build binary (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $VERSION = (Get-Content package.json | ConvertFrom-Json).version
+          $GIT_HASH = git rev-parse --short HEAD
+          $GIT_DIRTY = if ((git status --porcelain) -ne $null) { "true" } else { "false" }
+          bun build src/index.tsx --compile --target=${{ matrix.target }} --outfile=${{ matrix.artifact }} --define "__DEV__=false" --define "__VERSION__='`"$VERSION`"'" --define "__GIT_HASH__='`"$GIT_HASH`"'" --define "__GIT_DIRTY__=$GIT_DIRTY"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

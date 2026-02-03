@@ -2,30 +2,32 @@
  * Help screen component with colorful CLI help information
  */
 
-import { spawnSync } from 'node:child_process';
-
 import { Box, Text } from 'ink';
 
-// Version from package.json
-const VERSION = '0.3.0';
+// Build info: injected at build time via --define
+declare const __DEV__: boolean | undefined;
+declare const __VERSION__: string | undefined;
+declare const __GIT_HASH__: string | undefined;
+declare const __GIT_DIRTY__: boolean | undefined;
 
-// Get git commit hash at build time
-function getGitHash(): string {
-  try {
-    const result = spawnSync('git', ['rev-parse', '--short', 'HEAD'], {
-      encoding: 'utf-8',
-      timeout: 1000,
-    });
-    if (result.status === 0 && result.stdout) {
-      return result.stdout.trim();
-    }
-  } catch {
-    // Ignore errors
+// Dev mode if __DEV__ is not defined or is true
+const IS_DEV = typeof __DEV__ === 'undefined' || __DEV__;
+
+// Version: use injected value, or fallback to hardcoded (keep in sync with package.json)
+const VERSION = typeof __VERSION__ !== 'undefined' ? __VERSION__ : '0.3.0';
+
+function formatBuildInfo(): string {
+  if (IS_DEV) {
+    return 'dev';
+  }
+  if (typeof __GIT_HASH__ !== 'undefined' && __GIT_HASH__) {
+    const isDirty = typeof __GIT_DIRTY__ !== 'undefined' ? __GIT_DIRTY__ : false;
+    return isDirty ? `${__GIT_HASH__}, dirty` : __GIT_HASH__;
   }
   return 'unknown';
 }
 
-const GIT_HASH = getGitHash();
+const BUILD_INFO = formatBuildInfo();
 
 export const Help: React.FC = () => {
   return (
@@ -268,7 +270,7 @@ export const Version: React.FC = () => {
       <Text color="cyan">github-username-migrator</Text>
       <Text> </Text>
       <Text color="yellow">{VERSION}</Text>
-      <Text dimColor> ({GIT_HASH})</Text>
+      <Text dimColor> ({BUILD_INFO})</Text>
     </Box>
   );
 };
