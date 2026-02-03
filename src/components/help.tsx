@@ -5,7 +5,7 @@
 import { Box, Text } from 'ink';
 
 // Version from package.json
-const VERSION = '0.1.0';
+const VERSION = '0.2.0';
 
 export const Help: React.FC = () => {
   return (
