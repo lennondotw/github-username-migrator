@@ -1,0 +1,30 @@
+# Auto detect text files and normalize line endings
+* text=auto eol=lf
+
+# Force batch scripts to use CRLF
+*.{cmd,[cC][mM][dD]} text eol=crlf
+*.{bat,[bB][aA][tT]} text eol=crlf
+
+# Force bash scripts to use LF
+*.sh text eol=lf
+
+# Denote lockfiles as generated (hide in PR diffs by default)
+pnpm-lock.yaml -diff linguist-generated=true
+package-lock.json -diff linguist-generated=true
+yarn.lock -diff linguist-generated=true
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary
+*.zip binary
+*.tar.gz binary
+*.bun-build binary
