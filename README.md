@@ -19,13 +19,13 @@ Perfect for when you change your GitHub username and need to update all your loc
 
 Download the pre-built binary for your platform from [Releases](https://github.com/lennondotw/github-username-migrator/releases):
 
-| Platform | Architecture | Filename |
+| Platform | Architecture | Download |
 |----------|--------------|----------|
-| Linux | x64 | `github-username-migrator-linux-x64` |
-| Linux | arm64 | `github-username-migrator-linux-arm64` |
-| macOS | x64 (Intel) | `github-username-migrator-darwin-x64` |
-| macOS | arm64 (Apple Silicon) | `github-username-migrator-darwin-arm64` |
-| Windows | x64 | `github-username-migrator-windows-x64.exe` |
+| Linux | x64 | [`github-username-migrator-linux-x64`](https://github.com/lennondotw/github-username-migrator/releases/latest/download/github-username-migrator-linux-x64) |
+| Linux | arm64 | [`github-username-migrator-linux-arm64`](https://github.com/lennondotw/github-username-migrator/releases/latest/download/github-username-migrator-linux-arm64) |
+| macOS | x64 (Intel) | [`github-username-migrator-darwin-x64`](https://github.com/lennondotw/github-username-migrator/releases/latest/download/github-username-migrator-darwin-x64) |
+| macOS | arm64 (Apple Silicon) | [`github-username-migrator-darwin-arm64`](https://github.com/lennondotw/github-username-migrator/releases/latest/download/github-username-migrator-darwin-arm64) |
+| Windows | x64 | [`github-username-migrator-windows-x64.exe`](https://github.com/lennondotw/github-username-migrator/releases/latest/download/github-username-migrator-windows-x64.exe) |
 
 #### macOS / Linux
 
