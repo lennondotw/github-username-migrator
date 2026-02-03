@@ -2,10 +2,30 @@
  * Help screen component with colorful CLI help information
  */
 
+import { spawnSync } from 'node:child_process';
+
 import { Box, Text } from 'ink';
 
 // Version from package.json
 const VERSION = '0.3.0';
+
+// Get git commit hash at build time
+function getGitHash(): string {
+  try {
+    const result = spawnSync('git', ['rev-parse', '--short', 'HEAD'], {
+      encoding: 'utf-8',
+      timeout: 1000,
+    });
+    if (result.status === 0 && result.stdout) {
+      return result.stdout.trim();
+    }
+  } catch {
+    // Ignore errors
+  }
+  return 'unknown';
+}
+
+const GIT_HASH = getGitHash();
 
 export const Help: React.FC = () => {
   return (
@@ -248,6 +268,7 @@ export const Version: React.FC = () => {
       <Text color="cyan">github-username-migrator</Text>
       <Text> </Text>
       <Text color="yellow">{VERSION}</Text>
+      <Text dimColor> ({GIT_HASH})</Text>
     </Box>
   );
 };
