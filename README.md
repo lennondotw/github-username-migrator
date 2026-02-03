@@ -19,13 +19,38 @@ Perfect for when you change your GitHub username and need to update all your loc
 
 Download the pre-built binary for your platform from [Releases](https://github.com/lennondotw/github-username-migrator/releases):
 
-| Platform | Architecture | Download |
+| Platform | Architecture | Filename |
 |----------|--------------|----------|
 | Linux | x64 | `github-username-migrator-linux-x64` |
 | Linux | arm64 | `github-username-migrator-linux-arm64` |
-| macOS | x64 | `github-username-migrator-darwin-x64` |
+| macOS | x64 (Intel) | `github-username-migrator-darwin-x64` |
 | macOS | arm64 (Apple Silicon) | `github-username-migrator-darwin-arm64` |
 | Windows | x64 | `github-username-migrator-windows-x64.exe` |
+
+#### macOS / Linux
+
+```bash
+# Download (example for macOS Apple Silicon)
+curl -L -o github-username-migrator \
+  https://github.com/lennondotw/github-username-migrator/releases/latest/download/github-username-migrator-darwin-arm64
+
+# Make executable
+chmod +x github-username-migrator
+
+# macOS only: Remove quarantine attribute
+xattr -cr github-username-migrator
+
+# Run
+./github-username-migrator
+```
+
+#### Windows
+
+Download `github-username-migrator-windows-x64.exe` from releases and run:
+
+```powershell
+.\github-username-migrator-windows-x64.exe
+```
 
 ### From Source
 
@@ -47,11 +72,23 @@ pnpm build:compile
 ## Usage
 
 ```bash
-# Run the CLI
+# Show help
 ./github-username-migrator
 
-# Or run directly with bun (development)
-bun run src/index.tsx
+# Start interactive wizard (dry run by default)
+./github-username-migrator run
+
+# Apply changes (actually modify git remotes)
+./github-username-migrator run --apply
+
+# Scan a specific directory
+./github-username-migrator run --root ~/Projects
+
+# Exclude directories (glob patterns, repeatable)
+./github-username-migrator run -e "backup*" -e "archive"
+
+# Custom regex pattern matching (advanced)
+./github-username-migrator run --pattern-from "github.com/olduser" --pattern-to "github.com/newuser"
 ```
 
 ### Workflow
@@ -59,7 +96,7 @@ bun run src/index.tsx
 1. **Enter old username**: Your previous GitHub username
 2. **Enter new username**: Your new GitHub username
 3. **Scanning**: The tool scans your home directory for git repositories
-4. **Review**: View all repositories that will be updated
+4. **Review**: View all repositories that will be updated (↑↓ scroll, J/K page)
 5. **Confirm**: Approve the changes (or cancel)
 6. **Migration**: URLs are updated with detailed progress
 7. **Complete**: Summary and log file location
@@ -72,6 +109,18 @@ The tool handles both SSH and HTTPS remote URLs:
 git@github.com:olduser/repo.git     → git@github.com:newuser/repo.git
 https://github.com/olduser/repo.git → https://github.com/newuser/repo.git
 ```
+
+### Options
+
+| Option | Description |
+|--------|-------------|
+| `-a, --apply` | Actually apply changes (default: dry run) |
+| `-r, --root <path>` | Custom scan root directory |
+| `-e, --exclude <glob>` | Exclude directories matching glob (repeatable) |
+| `--pattern-from <regex>` | Custom regex to match URLs |
+| `--pattern-to <string>` | Replacement string ($1, $2 for capture groups) |
+| `-h, --help` | Show help |
+| `-v, --version` | Show version |
 
 ## Development
 
