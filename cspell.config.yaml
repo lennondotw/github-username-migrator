@@ -12,6 +12,8 @@ words:
   - olduser
   - newuser
   - testuser
+  - myuser
+  - targetuser
   - rustup
   - venv
   - pycache
