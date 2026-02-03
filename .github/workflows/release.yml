@@ -31,9 +31,7 @@ jobs:
           - target: bun-windows-x64
             os: windows-latest
             artifact: github-username-migrator-windows-x64.exe
-          - target: bun-windows-arm64
-            os: windows-latest
-            artifact: github-username-migrator-windows-arm64.exe
+          # Note: bun-windows-arm64 is not currently supported by Bun
     steps:
       - name: Checkout
         uses: actions/checkout@v4

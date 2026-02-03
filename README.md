@@ -11,7 +11,7 @@ Perfect for when you change your GitHub username and need to update all your loc
 - **Interactive TUI**: Beautiful terminal interface with real-time progress
 - **Safety First**: Review all changes before applying, with detailed confirmation
 - **Comprehensive Logging**: All changes are logged to `~/.github-username-migrator/logs/`
-- **Cross-Platform**: Works on Windows (x64/arm64), macOS (x64/arm64), and Linux (x64/arm64)
+- **Cross-Platform**: Works on Windows (x64), macOS (x64/arm64), and Linux (x64/arm64)
 
 ## Installation
 
@@ -26,7 +26,6 @@ Download the pre-built binary for your platform from [Releases](https://github.c
 | macOS | x64 | `github-username-migrator-darwin-x64` |
 | macOS | arm64 (Apple Silicon) | `github-username-migrator-darwin-arm64` |
 | Windows | x64 | `github-username-migrator-windows-x64.exe` |
-| Windows | arm64 | `github-username-migrator-windows-arm64.exe` |
 
 ### From Source
 

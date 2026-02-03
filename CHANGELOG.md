@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cross-platform binaries for:
   - Linux x64/arm64
   - macOS x64/arm64
-  - Windows x64/arm64
+  - Windows x64
 - GitHub Actions CI/CD pipeline with:
   - Lint, typecheck, and test jobs
   - Matrix testing across operating systems
