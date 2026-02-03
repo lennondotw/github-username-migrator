@@ -13,6 +13,7 @@ words:
   - newuser
   - testuser
   - myuser
+  - myrepo
   - targetuser
   - rustup
   - venv

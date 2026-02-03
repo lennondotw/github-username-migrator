@@ -82,29 +82,67 @@ export const Help: React.FC = () => {
         </Text>
         <Box marginLeft={2} flexDirection="column">
           <Box>
-            <Text color="yellow">-a, --apply{'         '}</Text>
+            <Text color="yellow">-a, --apply{'            '}</Text>
             <Text>Actually apply changes </Text>
             <Text color="red">(required to modify)</Text>
           </Box>
           <Box>
             <Text color="yellow">-r, --root </Text>
             <Text color="cyan">&lt;path&gt;</Text>
-            <Text color="yellow">{'   '}</Text>
+            <Text>{'      '}</Text>
             <Text>Custom scan root directory</Text>
           </Box>
           <Box>
             <Text color="yellow">-e, --exclude </Text>
-            <Text color="cyan">&lt;dirs&gt;</Text>
-            <Text>{'  '}</Text>
-            <Text>Extra dirs to exclude (comma-sep)</Text>
+            <Text color="cyan">&lt;glob&gt;</Text>
+            <Text>{'   '}</Text>
+            <Text>Exclude dirs matching glob (repeatable)</Text>
           </Box>
           <Box>
-            <Text color="yellow">-h, --help{'          '}</Text>
+            <Text color="yellow">--pattern-from </Text>
+            <Text color="cyan">&lt;regex&gt;</Text>
+            <Text>{'  '}</Text>
+            <Text>Custom regex to match URLs</Text>
+          </Box>
+          <Box>
+            <Text color="yellow">--pattern-to </Text>
+            <Text color="cyan">&lt;string&gt;</Text>
+            <Text>{'  '}</Text>
+            <Text>Replacement ($1, $2 for groups)</Text>
+          </Box>
+          <Box>
+            <Text color="yellow">-h, --help{'             '}</Text>
             <Text>Show this help message</Text>
           </Box>
           <Box>
-            <Text color="yellow">-v, --version{'       '}</Text>
+            <Text color="yellow">-v, --version{'          '}</Text>
             <Text>Show version number</Text>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Advanced Usage */}
+      <Box marginBottom={1} flexDirection="column">
+        <Text bold color="white">
+          ADVANCED USAGE
+        </Text>
+        <Box marginLeft={2} flexDirection="column">
+          <Text dimColor>Rename repository:</Text>
+          <Box>
+            <Text color="green">$ </Text>
+            <Text color="cyan">github-username-migrator run \</Text>
+          </Box>
+          <Box marginLeft={4}>
+            <Text color="cyan">--pattern-from </Text>
+            <Text color="gray">&quot;github.com/user/</Text>
+            <Text color="red">old-repo</Text>
+            <Text color="gray">&quot; \</Text>
+          </Box>
+          <Box marginLeft={4}>
+            <Text color="cyan">--pattern-to </Text>
+            <Text color="gray">&quot;github.com/user/</Text>
+            <Text color="green">new-repo</Text>
+            <Text color="gray">&quot;</Text>
           </Box>
         </Box>
       </Box>

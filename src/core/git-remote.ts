@@ -240,3 +240,48 @@ export async function findMatchingRemotes(
 
   return matches;
 }
+
+/**
+ * Get information about which remotes in a repository match a custom regex pattern
+ *
+ * @param repoPath - Path to the repository root
+ * @param patternFrom - Regex pattern to match remote URLs
+ * @param patternTo - Replacement string (supports $1, $2, etc. for capture groups)
+ * @returns Object with matched remotes and their proposed new URLs
+ */
+export async function findMatchingRemotesWithPattern(
+  repoPath: string,
+  patternFrom: string,
+  patternTo: string
+): Promise<
+  {
+    remote: GitRemote;
+    newUrl: string;
+  }[]
+> {
+  const remotes = await getRemoteUrls(repoPath);
+  const matches: { remote: GitRemote; newUrl: string }[] = [];
+
+  let regex: RegExp;
+  try {
+    regex = new RegExp(patternFrom, 'i');
+  } catch {
+    // Invalid regex, return empty matches
+    return [];
+  }
+
+  for (const remote of remotes) {
+    if (regex.test(remote.url)) {
+      const newUrl = remote.url.replace(regex, patternTo);
+      // Only add if URL actually changed
+      if (newUrl !== remote.url) {
+        matches.push({
+          remote,
+          newUrl,
+        });
+      }
+    }
+  }
+
+  return matches;
+}

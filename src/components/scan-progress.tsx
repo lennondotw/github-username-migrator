@@ -37,6 +37,9 @@ export const ScanProgress: React.FC<ScanProgressProps> = ({ progress }) => {
         <Text>
           <Text dimColor>Directories scanned: </Text>
           <Text color="yellow">{progress.directoriesScanned.toLocaleString()}</Text>
+          <Text dimColor> (</Text>
+          <Text color="gray">{progress.skippedDirectories.toLocaleString()}</Text>
+          <Text dimColor> skipped)</Text>
         </Text>
         <Text>
           <Text dimColor>Repositories found: </Text>

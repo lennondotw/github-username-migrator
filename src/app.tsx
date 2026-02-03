@@ -37,23 +37,26 @@ type AppPhase =
   | 'no-matches'
   | 'dry-run-complete';
 
+/** Custom pattern for matching and replacing remote URLs */
+export interface CustomPattern {
+  /** Regex pattern to match remote URLs */
+  from: string;
+  /** Replacement string (supports $1, $2, etc. for capture groups) */
+  to: string;
+}
+
 interface AppProps {
   /** Override the scan root directory (default: home directory) */
   scanRoot?: string;
   /** If true, only show what would be changed without applying (default: true) */
   dryRun?: boolean;
-  /** Additional directories to exclude from scanning */
-  extraExcludes?: string[];
-  /** Custom regex pattern for matching URLs (advanced) */
-  customPattern?: string;
+  /** Glob patterns to exclude directories from scanning */
+  excludePatterns?: string[];
+  /** Custom regex pattern for matching/replacing URLs (advanced) */
+  customPattern?: CustomPattern;
 }
 
-export const App: React.FC<AppProps> = ({
-  scanRoot,
-  dryRun = true,
-  extraExcludes = [],
-  customPattern: _customPattern,
-}) => {
+export const App: React.FC<AppProps> = ({ scanRoot, dryRun = true, excludePatterns = [], customPattern }) => {
   const { exit } = useApp();
   const [phase, setPhase] = useState<AppPhase>('welcome');
   const [oldUsername, setOldUsername] = useState('');
@@ -61,6 +64,7 @@ export const App: React.FC<AppProps> = ({
   const [scanProgress, setScanProgress] = useState<ScanProgressType>({
     currentPath: '',
     directoriesScanned: 0,
+    skippedDirectories: 0,
     repositoriesFound: 0,
     matchedCount: 0,
   });
@@ -117,7 +121,8 @@ export const App: React.FC<AppProps> = ({
         const root = scanRoot ?? homedir();
         const result = await scanForRepositories(root, oldUsername, newUsername, {
           signal: controller.signal,
-          extraExcludes,
+          excludePatterns,
+          customPattern,
           onProgress: (progress: ScanProgressType) => {
             setScanProgress(progress);
           },
@@ -145,7 +150,7 @@ export const App: React.FC<AppProps> = ({
     return () => {
       controller.abort();
     };
-  }, [phase, oldUsername, newUsername, scanRoot, extraExcludes]);
+  }, [phase, oldUsername, newUsername, scanRoot, excludePatterns, customPattern]);
 
   // Handle migration confirmation
   const handleConfirmMigration = useCallback(() => {

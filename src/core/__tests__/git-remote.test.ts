@@ -6,6 +6,7 @@ import { createTempRepo, type TempRepoResult } from '../../test-utils/fixtures';
 import {
   extractGitHubUsername,
   findMatchingRemotes,
+  findMatchingRemotesWithPattern,
   getRemoteUrls,
   isGitHubUrl,
   parseGitConfig,
@@ -277,6 +278,63 @@ describe('git-remote', () => {
       });
 
       const matches = await findMatchingRemotes(repo.path, 'targetuser', 'newuser');
+
+      expect(matches).toHaveLength(0);
+    });
+  });
+
+  describe('findMatchingRemotesWithPattern', () => {
+    let repo: TempRepoResult | null = null;
+
+    afterEach(async () => {
+      if (repo) {
+        await repo.cleanup();
+        repo = null;
+      }
+    });
+
+    it('should match remotes using custom regex pattern', async () => {
+      repo = await createTempRepo({
+        remotes: { origin: 'git@github.com:user/old-repo.git' },
+      });
+
+      const matches = await findMatchingRemotesWithPattern(repo.path, 'old-repo', 'new-repo');
+
+      expect(matches).toHaveLength(1);
+      expect(matches[0]?.newUrl).toBe('git@github.com:user/new-repo.git');
+    });
+
+    it('should support capture groups in replacement', async () => {
+      repo = await createTempRepo({
+        remotes: { origin: 'git@github.com:olduser/myrepo.git' },
+      });
+
+      const matches = await findMatchingRemotesWithPattern(
+        repo.path,
+        'github\\.com:olduser/(.+)',
+        'github.com:newuser/$1'
+      );
+
+      expect(matches).toHaveLength(1);
+      expect(matches[0]?.newUrl).toBe('git@github.com:newuser/myrepo.git');
+    });
+
+    it('should return empty array for invalid regex', async () => {
+      repo = await createTempRepo({
+        remotes: { origin: 'git@github.com:user/repo.git' },
+      });
+
+      const matches = await findMatchingRemotesWithPattern(repo.path, '[invalid(regex', 'replacement');
+
+      expect(matches).toHaveLength(0);
+    });
+
+    it('should not include matches where URL did not change', async () => {
+      repo = await createTempRepo({
+        remotes: { origin: 'git@github.com:user/repo.git' },
+      });
+
+      const matches = await findMatchingRemotesWithPattern(repo.path, 'nonexistent', 'replacement');
 
       expect(matches).toHaveLength(0);
     });

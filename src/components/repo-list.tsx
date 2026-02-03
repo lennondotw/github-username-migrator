@@ -56,23 +56,26 @@ export const RepoList: React.FC<RepoListProps> = ({ repositories, oldUsername, n
       </Box>
 
       <Box flexDirection="column" marginBottom={1}>
-        {repositories.slice(0, 10).map((repo, index) => {
-          // Truncate path for display
-          const displayPath = repo.path.length > 50 ? '...' + repo.path.slice(-47) : repo.path;
-
-          return (
-            <Box key={index} flexDirection="column" marginBottom={1}>
-              <Text color="yellow">{displayPath}</Text>
-              {repo.matchedRemotes.map((remote, remoteIndex) => (
-                <Box key={remoteIndex} marginLeft={2}>
-                  <Text dimColor>
-                    {remote.name}: {remote.url}
+        {repositories.slice(0, 10).map((repo, index) => (
+          <Box key={index} flexDirection="column" marginBottom={1}>
+            <Text color="yellow">{repo.path}</Text>
+            {repo.matchedRemotes.map((matched, remoteIndex) => (
+              <Box key={remoteIndex} marginLeft={2} flexDirection="column">
+                <Text>
+                  <Text color="cyan">{matched.remote.name}</Text>
+                  <Text dimColor>: </Text>
+                  <Text color="red" strikethrough>
+                    {matched.remote.url}
                   </Text>
-                </Box>
-              ))}
-            </Box>
-          );
-        })}
+                </Text>
+                <Text marginLeft={2}>
+                  <Text dimColor>→ </Text>
+                  <Text color="green">{matched.newUrl}</Text>
+                </Text>
+              </Box>
+            ))}
+          </Box>
+        ))}
         {repositories.length > 10 && <Text dimColor>... and {repositories.length - 10} more repositories</Text>}
       </Box>
 

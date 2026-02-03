@@ -138,6 +138,54 @@ describe('scanner', () => {
       // Should stop early due to abort
       expect(result.matchedRepositories.length).toBeLessThanOrEqual(3);
     });
+
+    it('should exclude directories matching glob patterns', async () => {
+      testDir = await createTestDirectory([
+        { path: 'project', remotes: { origin: 'git@github.com:targetuser/main.git' } },
+        { path: 'temp-backup/repo', remotes: { origin: 'git@github.com:targetuser/backup.git' } },
+        { path: 'old-stuff/repo', remotes: { origin: 'git@github.com:targetuser/old.git' } },
+      ]);
+
+      const result = await scanForRepositories(testDir.basePath, 'targetuser', 'newuser', {
+        excludePatterns: ['temp*', 'old*'],
+      });
+
+      // Should only find the main project, not the ones in excluded dirs
+      expect(result.matchedRepositories).toHaveLength(1);
+      expect(result.matchedRepositories[0]?.path).toBe(join(testDir.basePath, 'project'));
+    });
+
+    it('should support custom pattern matching for remote URLs', async () => {
+      testDir = await createTestDirectory([
+        { path: 'project', remotes: { origin: 'git@github.com:user/old-repo-name.git' } },
+      ]);
+
+      const result = await scanForRepositories(testDir.basePath, 'user', 'user', {
+        customPattern: {
+          from: 'old-repo-name',
+          to: 'new-repo-name',
+        },
+      });
+
+      expect(result.matchedRepositories).toHaveLength(1);
+      expect(result.matchedRepositories[0]?.matchedRemotes[0]?.newUrl).toBe('git@github.com:user/new-repo-name.git');
+    });
+
+    it('should support custom pattern with capture groups', async () => {
+      testDir = await createTestDirectory([
+        { path: 'project', remotes: { origin: 'git@github.com:olduser/myrepo.git' } },
+      ]);
+
+      const result = await scanForRepositories(testDir.basePath, 'olduser', 'newuser', {
+        customPattern: {
+          from: 'github\\.com:olduser/(.+)',
+          to: 'github.com:newuser/$1',
+        },
+      });
+
+      expect(result.matchedRepositories).toHaveLength(1);
+      expect(result.matchedRepositories[0]?.matchedRemotes[0]?.newUrl).toBe('git@github.com:newuser/myrepo.git');
+    });
   });
 
   describe('countRepositories', () => {

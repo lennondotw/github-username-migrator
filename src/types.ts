@@ -68,6 +68,8 @@ export interface ScanProgress {
   currentPath: string;
   /** Number of directories scanned so far */
   directoriesScanned: number;
+  /** Number of directories skipped (ignored patterns) */
+  skippedDirectories: number;
   /** Number of repositories found so far */
   repositoriesFound: number;
   /** Number of matched repositories found so far */

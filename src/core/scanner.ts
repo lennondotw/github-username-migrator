@@ -11,7 +11,53 @@ import { join } from 'node:path';
 
 import { shouldIgnoreSegment } from '../constants/ignore-patterns';
 import type { MatchedRepository, ScanError, ScanProgress, ScanResult } from '../types';
-import { findMatchingRemotes, getRemoteUrls } from './git-remote';
+import { findMatchingRemotes, findMatchingRemotesWithPattern, getRemoteUrls } from './git-remote';
+
+/**
+ * Simple glob pattern matcher
+ * Supports: * (any chars except /), ** (any chars including /), ? (single char)
+ */
+function matchGlob(pattern: string, name: string): boolean {
+  // Convert glob pattern to regex
+  let regexStr = '^';
+  for (let i = 0; i < pattern.length; i++) {
+    const char = pattern[i];
+    if (char === '*') {
+      if (pattern[i + 1] === '*') {
+        // ** matches anything
+        regexStr += '.*';
+        i++; // Skip next *
+      } else {
+        // * matches anything except /
+        regexStr += '[^/]*';
+      }
+    } else if (char === '?') {
+      regexStr += '.';
+    } else if (char !== undefined && '.+^${}|()[]\\'.includes(char)) {
+      regexStr += '\\' + char;
+    } else if (char !== undefined) {
+      regexStr += char;
+    }
+  }
+  regexStr += '$';
+
+  return new RegExp(regexStr, 'i').test(name);
+}
+
+/**
+ * Check if a directory name matches any exclude pattern
+ */
+function matchesExcludePattern(name: string, patterns: string[]): boolean {
+  return patterns.some((pattern) => matchGlob(pattern, name));
+}
+
+/** Custom pattern for matching and replacing remote URLs */
+export interface CustomPattern {
+  /** Regex pattern to match remote URLs */
+  from: string;
+  /** Replacement string (supports $1, $2, etc. for capture groups) */
+  to: string;
+}
 
 /**
  * Options for the scanner
@@ -23,8 +69,10 @@ export interface ScanOptions {
   maxDepth?: number;
   /** Abort signal for cancellation */
   signal?: AbortSignal;
-  /** Additional directories to exclude (by name) */
-  extraExcludes?: string[];
+  /** Glob patterns to exclude directories */
+  excludePatterns?: string[];
+  /** Custom regex pattern for matching/replacing URLs */
+  customPattern?: CustomPattern;
 }
 
 /**
@@ -48,8 +96,10 @@ async function* scanDirectory(
   depth: number,
   maxDepth: number,
   signal?: AbortSignal,
-  extraExcludes: string[] = []
-): AsyncGenerator<{ type: 'dir' } | { type: 'repo'; path: string } | { type: 'error'; path: string; message: string }> {
+  excludePatterns: string[] = []
+): AsyncGenerator<
+  { type: 'dir' } | { type: 'skip' } | { type: 'repo'; path: string } | { type: 'error'; path: string; message: string }
+> {
   if (signal?.aborted) {
     return;
   }
@@ -95,23 +145,26 @@ async function* scanDirectory(
 
     // Skip hidden directories except .git (which we handle specially)
     if (name.startsWith('.') && name !== '.git') {
+      yield { type: 'skip' };
       continue;
     }
 
     // Skip ignored directories
     if (shouldIgnoreSegment(name)) {
+      yield { type: 'skip' };
       continue;
     }
 
-    // Skip extra excluded directories
-    if (extraExcludes.includes(name)) {
+    // Skip directories matching exclude patterns (glob)
+    if (matchesExcludePattern(name, excludePatterns)) {
+      yield { type: 'skip' };
       continue;
     }
 
     const fullPath = join(dirPath, name);
 
     // Recursively scan subdirectory
-    yield* scanDirectory(fullPath, depth + 1, maxDepth, signal, extraExcludes);
+    yield* scanDirectory(fullPath, depth + 1, maxDepth, signal, excludePatterns);
   }
 }
 
@@ -124,12 +177,13 @@ export async function scanForRepositories(
   newUsername: string,
   options: ScanOptions = {}
 ): Promise<ScanResult> {
-  const { onProgress, maxDepth = 20, signal, extraExcludes = [] } = options;
+  const { onProgress, maxDepth = 20, signal, excludePatterns = [], customPattern } = options;
 
   const startTime = Date.now();
   const matchedRepositories: MatchedRepository[] = [];
   const errors: ScanError[] = [];
   let directoriesScanned = 0;
+  let skippedDirectories = 0;
   let repositoriesFound = 0;
 
   // Progress throttling - update at most every 100ms
@@ -143,6 +197,7 @@ export async function scanForRepositories(
       onProgress({
         currentPath,
         directoriesScanned,
+        skippedDirectories,
         repositoriesFound,
         matchedCount: matchedRepositories.length,
       });
@@ -150,13 +205,18 @@ export async function scanForRepositories(
   };
 
   // Scan directories
-  for await (const event of scanDirectory(rootDir, 0, maxDepth, signal, extraExcludes)) {
+  for await (const event of scanDirectory(rootDir, 0, maxDepth, signal, excludePatterns)) {
     if (signal?.aborted) {
       break;
     }
 
     if (event.type === 'dir') {
       directoriesScanned++;
+      continue;
+    }
+
+    if (event.type === 'skip') {
+      skippedDirectories++;
       continue;
     }
 
@@ -171,7 +231,11 @@ export async function scanForRepositories(
 
     try {
       const remotes = await getRemoteUrls(event.path);
-      const matchedRemotes = await findMatchingRemotes(event.path, oldUsername, newUsername);
+
+      // Use custom pattern if provided, otherwise use username-based matching
+      const matchedRemotes = customPattern
+        ? await findMatchingRemotesWithPattern(event.path, customPattern.from, customPattern.to)
+        : await findMatchingRemotes(event.path, oldUsername, newUsername);
 
       if (matchedRemotes.length > 0) {
         matchedRepositories.push({
@@ -193,6 +257,7 @@ export async function scanForRepositories(
     onProgress({
       currentPath: '',
       directoriesScanned,
+      skippedDirectories,
       repositoriesFound,
       matchedCount: matchedRepositories.length,
     });
