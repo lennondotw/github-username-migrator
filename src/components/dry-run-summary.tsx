@@ -24,35 +24,13 @@ export const DryRunSummary: React.FC<DryRunSummaryProps> = ({ repositories, oldU
   return (
     <Box flexDirection="column" paddingY={1}>
       {/* Header */}
-      <Box marginBottom={1}>
-        <Text bold color="cyan">
-          ╭──────────────────────────────────────────╮
-        </Text>
-      </Box>
-      <Box>
-        <Text bold color="cyan">
-          │{'  '}
-        </Text>
-        <Text bold color="yellow">
-          🔍 DRY RUN MODE
-        </Text>
-        <Text bold color="cyan">
-          {'                       '}│
-        </Text>
-      </Box>
-      <Box>
-        <Text bold color="cyan">
-          │{'     '}
-        </Text>
-        <Text dimColor>No changes were made</Text>
-        <Text bold color="cyan">
-          {'                '}│
-        </Text>
-      </Box>
-      <Box marginBottom={1}>
-        <Text bold color="cyan">
-          ╰──────────────────────────────────────────╯
-        </Text>
+      <Box borderStyle="round" borderColor="cyan" paddingX={4} marginBottom={1} alignSelf="flex-start">
+        <Box flexDirection="column">
+          <Text bold color="yellow">
+            DRY RUN MODE
+          </Text>
+          <Text dimColor>No changes were made</Text>
+        </Box>
       </Box>
 
       {/* Summary */}

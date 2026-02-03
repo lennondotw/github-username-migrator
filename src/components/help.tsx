@@ -11,35 +11,13 @@ export const Help: React.FC = () => {
   return (
     <Box flexDirection="column" paddingY={1}>
       {/* Logo / Title */}
-      <Box marginBottom={1}>
-        <Text bold color="cyan">
-          ╭─────────────────────────────────────────────────────────╮
-        </Text>
-      </Box>
-      <Box>
-        <Text bold color="cyan">
-          │{'  '}
-        </Text>
-        <Text bold color="magenta">
-          🔄 GitHub Username Migrator
-        </Text>
-        <Text bold color="cyan">
-          {'                          '}│
-        </Text>
-      </Box>
-      <Box>
-        <Text bold color="cyan">
-          │{'     '}
-        </Text>
-        <Text dimColor>Migrate GitHub usernames in git remotes</Text>
-        <Text bold color="cyan">
-          {'        '}│
-        </Text>
-      </Box>
-      <Box marginBottom={1}>
-        <Text bold color="cyan">
-          ╰─────────────────────────────────────────────────────────╯
-        </Text>
+      <Box borderStyle="round" borderColor="cyan" paddingX={4} marginBottom={1} alignSelf="flex-start">
+        <Box flexDirection="column">
+          <Text bold color="magenta">
+            GitHub Username Migrator
+          </Text>
+          <Text dimColor>Migrate GitHub usernames in git remotes</Text>
+        </Box>
       </Box>
 
       {/* Version */}
