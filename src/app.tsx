@@ -216,7 +216,11 @@ export const App: React.FC<AppProps> = ({ scanRoot, dryRun = true, excludePatter
 
     const runMigration = async () => {
       try {
-        const result = await migrate(matchedRepos, oldUsername, newUsername, {
+        const result = await migrate({
+          repositories: matchedRepos,
+          oldUsername,
+          newUsername,
+          scanRoot: scanRoot ?? homedir(),
           signal: controller.signal,
           onProgress: (progress: MigrationProgressType) => {
             setMigrationProgress(progress);
@@ -244,7 +248,7 @@ export const App: React.FC<AppProps> = ({ scanRoot, dryRun = true, excludePatter
     return () => {
       controller.abort();
     };
-  }, [phase, matchedRepos, oldUsername, newUsername]);
+  }, [phase, matchedRepos, oldUsername, newUsername, scanRoot]);
 
   // Render the current phase content
   const renderPhase = () => {
