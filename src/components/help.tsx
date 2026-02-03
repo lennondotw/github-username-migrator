@@ -14,7 +14,7 @@ declare const __GIT_DIRTY__: boolean | undefined;
 const IS_DEV = typeof __DEV__ === 'undefined' || __DEV__;
 
 // Version: use injected value, or fallback to hardcoded (keep in sync with package.json)
-const VERSION = typeof __VERSION__ !== 'undefined' ? __VERSION__ : '0.3.0';
+const VERSION = typeof __VERSION__ !== 'undefined' ? __VERSION__ : '0.4.0';
 
 function formatBuildInfo(): string {
   if (IS_DEV) {

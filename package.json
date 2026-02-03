@@ -1,6 +1,6 @@
 {
   "name": "github-username-migrator",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "CLI tool to migrate GitHub username in git remote URLs across all repositories",
   "type": "module",
   "bin": {
