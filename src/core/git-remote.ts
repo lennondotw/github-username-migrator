@@ -25,7 +25,8 @@ const GITHUB_HTTPS_REGEX = /^https:\/\/github\.com\/([^/]+)\/(.+?)(?:\.git)?$/;
  */
 export function parseGitConfig(configContent: string): GitRemote[] {
   const remotes: GitRemote[] = [];
-  const lines = configContent.split('\n');
+  // Normalize line endings for cross-platform compatibility
+  const lines = configContent.replace(/\r\n/g, '\n').split('\n');
 
   let currentRemote: string | null = null;
 
@@ -149,7 +150,10 @@ export function urlContainsUsername(url: string, username: string): boolean {
  * @returns Updated config file content
  */
 export function updateRemoteInConfig(configContent: string, remoteName: string, newUrl: string): string {
-  const lines = configContent.split('\n');
+  // Detect original line ending style
+  const lineEnding = configContent.includes('\r\n') ? '\r\n' : '\n';
+  // Normalize for processing
+  const lines = configContent.replace(/\r\n/g, '\n').split('\n');
   const result: string[] = [];
 
   let inTargetRemote = false;
@@ -187,7 +191,7 @@ export function updateRemoteInConfig(configContent: string, remoteName: string, 
     result.push(line);
   }
 
-  return result.join('\n');
+  return result.join(lineEnding);
 }
 
 /**
