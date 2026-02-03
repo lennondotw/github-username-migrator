@@ -1,0 +1,189 @@
+/**
+ * Help screen component with colorful CLI help information
+ */
+
+import { Box, Text } from 'ink';
+
+// Version from package.json
+const VERSION = '0.1.0';
+
+export const Help: React.FC = () => {
+  return (
+    <Box flexDirection="column" paddingY={1}>
+      {/* Logo / Title */}
+      <Box marginBottom={1}>
+        <Text bold color="cyan">
+          ╭─────────────────────────────────────────────────────────╮
+        </Text>
+      </Box>
+      <Box>
+        <Text bold color="cyan">
+          │{'  '}
+        </Text>
+        <Text bold color="magenta">
+          🔄 GitHub Username Migrator
+        </Text>
+        <Text bold color="cyan">
+          {'                          '}│
+        </Text>
+      </Box>
+      <Box>
+        <Text bold color="cyan">
+          │{'     '}
+        </Text>
+        <Text dimColor>Migrate GitHub usernames in git remotes</Text>
+        <Text bold color="cyan">
+          {'        '}│
+        </Text>
+      </Box>
+      <Box marginBottom={1}>
+        <Text bold color="cyan">
+          ╰─────────────────────────────────────────────────────────╯
+        </Text>
+      </Box>
+
+      {/* Version */}
+      <Box marginBottom={1}>
+        <Text dimColor>Version: </Text>
+        <Text color="yellow">{VERSION}</Text>
+      </Box>
+
+      {/* Description */}
+      <Box marginBottom={1} flexDirection="column">
+        <Text bold color="white">
+          DESCRIPTION
+        </Text>
+        <Box marginLeft={2} flexDirection="column">
+          <Text>Scan all git repositories in your home directory and update</Text>
+          <Text>GitHub remote URLs from one username to another.</Text>
+        </Box>
+      </Box>
+
+      {/* Usage */}
+      <Box marginBottom={1} flexDirection="column">
+        <Text bold color="white">
+          USAGE
+        </Text>
+        <Box marginLeft={2} flexDirection="column">
+          <Box>
+            <Text color="green">$ </Text>
+            <Text color="cyan">github-username-migrator</Text>
+            <Text dimColor> [command] [options]</Text>
+          </Box>
+          <Box marginTop={1}>
+            <Text color="green">$ </Text>
+            <Text color="cyan">github-username-migrator run</Text>
+            <Text dimColor>{'   '}# Start migration</Text>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Commands */}
+      <Box marginBottom={1} flexDirection="column">
+        <Text bold color="white">
+          COMMANDS
+        </Text>
+        <Box marginLeft={2} flexDirection="column">
+          <Box>
+            <Text color="green">run{'             '}</Text>
+            <Text>Start the interactive migration wizard</Text>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Options */}
+      <Box marginBottom={1} flexDirection="column">
+        <Text bold color="white">
+          OPTIONS
+        </Text>
+        <Box marginLeft={2} flexDirection="column">
+          <Box>
+            <Text color="yellow">-h, --help{'      '}</Text>
+            <Text>Show this help message</Text>
+          </Box>
+          <Box>
+            <Text color="yellow">-v, --version{'   '}</Text>
+            <Text>Show version number</Text>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Workflow */}
+      <Box marginBottom={1} flexDirection="column">
+        <Text bold color="white">
+          WORKFLOW
+        </Text>
+        <Box marginLeft={2} flexDirection="column">
+          <Box>
+            <Text color="blue">1.</Text>
+            <Text> Enter your </Text>
+            <Text color="red">old</Text>
+            <Text> GitHub username</Text>
+          </Box>
+          <Box>
+            <Text color="blue">2.</Text>
+            <Text> Enter your </Text>
+            <Text color="green">new</Text>
+            <Text> GitHub username</Text>
+          </Box>
+          <Box>
+            <Text color="blue">3.</Text>
+            <Text> Review found repositories</Text>
+          </Box>
+          <Box>
+            <Text color="blue">4.</Text>
+            <Text> Confirm to apply changes</Text>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Examples */}
+      <Box marginBottom={1} flexDirection="column">
+        <Text bold color="white">
+          SUPPORTED URL FORMATS
+        </Text>
+        <Box marginLeft={2} flexDirection="column">
+          <Box>
+            <Text dimColor>SSH:{'   '}</Text>
+            <Text color="gray">git@github.com:</Text>
+            <Text color="red">olduser</Text>
+            <Text color="gray">/repo.git</Text>
+          </Box>
+          <Box>
+            <Text dimColor>HTTPS: </Text>
+            <Text color="gray">https://github.com/</Text>
+            <Text color="red">olduser</Text>
+            <Text color="gray">/repo.git</Text>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Log location */}
+      <Box marginBottom={1} flexDirection="column">
+        <Text bold color="white">
+          LOG LOCATION
+        </Text>
+        <Box marginLeft={2}>
+          <Text color="cyan">~/.github-username-migrator/logs/</Text>
+        </Box>
+      </Box>
+
+      {/* Footer */}
+      <Box marginTop={1}>
+        <Text dimColor>
+          For more info: <Text color="blue">https://github.com/lennondotw/github-username-migrator</Text>
+        </Text>
+      </Box>
+    </Box>
+  );
+};
+
+export const Version: React.FC = () => {
+  return (
+    <Box>
+      <Text color="cyan">github-username-migrator</Text>
+      <Text> </Text>
+      <Text color="yellow">{VERSION}</Text>
+    </Box>
+  );
+};
