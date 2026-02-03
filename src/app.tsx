@@ -4,7 +4,7 @@
  * Orchestrates the entire migration flow through different phases.
  */
 
-import { Box, Text, useApp, useInput } from 'ink';
+import { Box, Static, Text, useApp, useInput } from 'ink';
 import { homedir } from 'node:os';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -25,6 +25,12 @@ import type {
   MigrationProgress as MigrationProgressType,
   ScanProgress as ScanProgressType,
 } from './types';
+
+/** Represents a completed step in the workflow */
+interface CompletedStep {
+  id: string;
+  content: React.ReactNode;
+}
 
 type AppPhase =
   | 'welcome'
@@ -75,9 +81,15 @@ export const App: React.FC<AppProps> = ({ scanRoot, dryRun = true, excludePatter
     results: [],
   });
   const [logPath, setLogPath] = useState<string | undefined>();
+  const [completedSteps, setCompletedSteps] = useState<CompletedStep[]>([]);
 
   // Abort controller for cancellation
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  // Add a completed step to the history
+  const addCompletedStep = useCallback((id: string, content: React.ReactNode) => {
+    setCompletedSteps((prev) => [...prev, { id, content }]);
+  }, []);
 
   // Handle welcome screen
   useInput(
@@ -103,11 +115,25 @@ export const App: React.FC<AppProps> = ({ scanRoot, dryRun = true, excludePatter
   );
 
   // Handle username submission
-  const handleUsernameSubmit = useCallback((oldUser: string, newUser: string) => {
-    setOldUsername(oldUser);
-    setNewUsername(newUser);
-    setPhase('scanning');
-  }, []);
+  const handleUsernameSubmit = useCallback(
+    (oldUser: string, newUser: string) => {
+      setOldUsername(oldUser);
+      setNewUsername(newUser);
+      addCompletedStep(
+        'usernames',
+        <Box flexDirection="column">
+          <Text>
+            <Text color="green">✓</Text> Old username: <Text color="red">{oldUser}</Text>
+          </Text>
+          <Text>
+            <Text color="green">✓</Text> New username: <Text color="green">{newUser}</Text>
+          </Text>
+        </Box>
+      );
+      setPhase('scanning');
+    },
+    [addCompletedStep]
+  );
 
   // Start scanning when phase changes to scanning
   useEffect(() => {
@@ -132,6 +158,19 @@ export const App: React.FC<AppProps> = ({ scanRoot, dryRun = true, excludePatter
 
         setMatchedRepos(result.matchedRepositories);
 
+        // Add scan completion to history
+        const totalRemotes = result.matchedRepositories.reduce((sum, repo) => sum + repo.matchedRemotes.length, 0);
+        addCompletedStep(
+          'scan',
+          <Box flexDirection="column">
+            <Text>
+              <Text color="green">✓</Text> Scan complete: {result.directoriesScanned.toLocaleString()} directories (
+              {result.repositoriesFound} repos, <Text color="cyan">{result.matchedRepositories.length}</Text> matched,{' '}
+              {totalRemotes} remotes)
+            </Text>
+          </Box>
+        );
+
         if (result.matchedRepositories.length === 0) {
           setPhase('no-matches');
         } else {
@@ -150,7 +189,7 @@ export const App: React.FC<AppProps> = ({ scanRoot, dryRun = true, excludePatter
     return () => {
       controller.abort();
     };
-  }, [phase, oldUsername, newUsername, scanRoot, excludePatterns, customPattern]);
+  }, [phase, oldUsername, newUsername, scanRoot, excludePatterns, customPattern, addCompletedStep]);
 
   // Handle migration confirmation
   const handleConfirmMigration = useCallback(() => {
@@ -207,77 +246,97 @@ export const App: React.FC<AppProps> = ({ scanRoot, dryRun = true, excludePatter
     };
   }, [phase, matchedRepos, oldUsername, newUsername]);
 
-  // Render based on current phase
-  switch (phase) {
-    case 'welcome':
-      return <Welcome />;
+  // Render the current phase content
+  const renderPhase = () => {
+    switch (phase) {
+      case 'welcome':
+        return <Welcome />;
 
-    case 'input':
-      return <UsernameInput onSubmit={handleUsernameSubmit} />;
+      case 'input':
+        return <UsernameInput onSubmit={handleUsernameSubmit} />;
 
-    case 'scanning':
-      return <ScanProgress progress={scanProgress} />;
+      case 'scanning':
+        return <ScanProgress progress={scanProgress} />;
 
-    case 'review':
-      return (
-        <RepoList
-          repositories={matchedRepos}
-          oldUsername={oldUsername}
-          newUsername={newUsername}
-          onConfirm={handleConfirmMigration}
-          onCancel={handleCancelMigration}
-        />
-      );
+      case 'review':
+        return (
+          <RepoList
+            repositories={matchedRepos}
+            oldUsername={oldUsername}
+            newUsername={newUsername}
+            onConfirm={handleConfirmMigration}
+            onCancel={handleCancelMigration}
+          />
+        );
 
-    case 'migrating':
-      return <MigrationProgress progress={migrationProgress} />;
+      case 'migrating':
+        return <MigrationProgress progress={migrationProgress} />;
 
-    case 'complete':
-      return <ResultSummary results={migrationProgress.results} logPath={logPath} />;
+      case 'complete':
+        return <ResultSummary results={migrationProgress.results} logPath={logPath} />;
 
-    case 'dry-run-complete':
-      return (
-        <DryRunSummary
-          repositories={matchedRepos}
-          oldUsername={oldUsername}
-          newUsername={newUsername}
-          onExit={() => {
-            exit();
-          }}
-        />
-      );
+      case 'dry-run-complete':
+        return (
+          <DryRunSummary
+            repositories={matchedRepos}
+            oldUsername={oldUsername}
+            newUsername={newUsername}
+            onExit={() => {
+              exit();
+            }}
+          />
+        );
 
-    case 'cancelled':
-      return (
-        <Box flexDirection="column" paddingY={1}>
-          <Text color="yellow">Migration cancelled.</Text>
-          <Text dimColor>Press any key to exit...</Text>
-        </Box>
-      );
-
-    case 'no-matches':
-      return (
-        <Box flexDirection="column" paddingY={1}>
-          <Text color="yellow">No repositories found with username &quot;{oldUsername}&quot;.</Text>
-          <Text dimColor>Scanned {scanProgress.directoriesScanned.toLocaleString()} directories.</Text>
-          <Text dimColor>Found {scanProgress.repositoriesFound} repositories total.</Text>
-          <Box marginTop={1}>
-            <Text dimColor>Press Enter or Q to exit...</Text>
+      case 'cancelled':
+        return (
+          <Box flexDirection="column" paddingY={1}>
+            <Text color="yellow">Migration cancelled.</Text>
+            <Text dimColor>Press any key to exit...</Text>
           </Box>
-        </Box>
-      );
+        );
 
-    default:
-      return (
-        <Confirmation
-          message="Unknown state"
-          onConfirm={() => {
-            exit();
-          }}
-          onCancel={() => {
-            exit();
-          }}
-        />
-      );
-  }
+      case 'no-matches':
+        return (
+          <Box flexDirection="column" paddingY={1}>
+            <Text color="yellow">No repositories found with username &quot;{oldUsername}&quot;.</Text>
+            <Text dimColor>Scanned {scanProgress.directoriesScanned.toLocaleString()} directories.</Text>
+            <Text dimColor>Found {scanProgress.repositoriesFound} repositories total.</Text>
+            <Box marginTop={1}>
+              <Text dimColor>Press Enter or Q to exit...</Text>
+            </Box>
+          </Box>
+        );
+
+      default:
+        return (
+          <Confirmation
+            message="Unknown state"
+            onConfirm={() => {
+              exit();
+            }}
+            onCancel={() => {
+              exit();
+            }}
+          />
+        );
+    }
+  };
+
+  return (
+    <>
+      {/* Render completed steps as static content */}
+      {completedSteps.length > 0 && (
+        <Static items={completedSteps}>
+          {(step) => (
+            <Box key={step.id} marginBottom={0}>
+              {step.content}
+            </Box>
+          )}
+        </Static>
+      )}
+
+      {/* Render current phase */}
+      {renderPhase()}
+    </>
+  );
 };
