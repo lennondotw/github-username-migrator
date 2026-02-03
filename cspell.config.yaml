@@ -1,0 +1,20 @@
+words:
+  - compat
+  - esbuild
+  - nodenext
+  - lennondotw
+  - Vitest
+  - tmpdir
+  - outdir
+  - outfile
+  - homedir
+  - subdir
+flagWords:
+  - blacklist -> blocklist
+  - whitelist -> allowlist
+suggestWords:
+  - colour -> color
+ignorePaths:
+  - cspell.config.yaml
+  - pnpm-lock.yaml
+  - node_modules

@@ -1,0 +1,67 @@
+{
+  "name": "github-username-migrator",
+  "version": "0.1.0",
+  "description": "CLI tool to migrate GitHub username in git remote URLs across all repositories",
+  "type": "module",
+  "bin": {
+    "github-username-migrator": "./dist/index.js"
+  },
+  "imports": {
+    "#src/*": "./src/*"
+  },
+  "scripts": {
+    "build": "bun build src/index.tsx --outdir dist --target bun",
+    "dev": "bun run src/index.tsx",
+    "lint": "eslint . --cache --cache-strategy content --cache-location ./node_modules/.cache/eslint/eslintcache.json --max-warnings 0 --report-unused-disable-directives",
+    "start": "bun run dist/index.js",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "test:update": "bun test --update-snapshots",
+    "test:watch": "bun test --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "ink": "^6.0.0",
+    "ink-spinner": "^5.0.0",
+    "ink-text-input": "^6.0.0",
+    "p-limit": "^6.2.0",
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@cspell/eslint-plugin": "^9.4.0",
+    "@eslint/js": "^9.39.2",
+    "@types/bun": "latest",
+    "@types/eslint-config-prettier": "^6.11.3",
+    "@types/node": "^22.15.2",
+    "@types/react": "^19.0.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.5.0",
+    "prettier": "^3.7.4",
+    "prettier-plugin-organize-imports": "^4.3.0",
+    "react-devtools-core": "^7.0.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.50.0"
+  },
+  "packageManager": "pnpm@10.11.0",
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lennondotw/github-username-migrator.git"
+  },
+  "keywords": [
+    "git",
+    "github",
+    "username",
+    "migration",
+    "cli",
+    "tui"
+  ],
+  "author": "lennondotw",
+  "license": "MIT"
+}

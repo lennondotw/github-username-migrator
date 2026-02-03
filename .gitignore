@@ -1,0 +1,24 @@
+# Logs
+logs/
+*.log
+pnpm-debug.log*
+
+# Runtime
+node_modules/
+
+# Build artifacts
+dist/
+dist-ssr/
+*.local
+
+# Downloaded images
+images/
+
+# Editor directories and files
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+
+# macOS
+.DS_Store
