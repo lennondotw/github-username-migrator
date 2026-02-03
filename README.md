@@ -1,21 +1,32 @@
 # GitHub Username Migrator
 
-CLI tool to scan all git repositories in your home directory and migrate GitHub username in remote URLs.
+A cross-platform CLI tool to scan all git repositories and migrate GitHub username in remote URLs.
+
+Perfect for when you change your GitHub username and need to update all your local repositories.
 
 ## Features
 
-- Scans all `.git` repositories recursively from home directory
-- Smart ignore patterns (node_modules, caches, etc.)
-- Interactive TUI with progress display
-- Dry-run mode for safety
-- Detailed migration logs
-- Cross-platform support (Windows, macOS, Linux)
+- **Recursive Scanning**: Scans all `.git` repositories from your home directory
+- **Smart Ignore**: Automatically skips `node_modules`, caches, and other non-essential directories
+- **Interactive TUI**: Beautiful terminal interface with real-time progress
+- **Safety First**: Review all changes before applying, with detailed confirmation
+- **Comprehensive Logging**: All changes are logged to `~/.github-username-migrator/logs/`
+- **Cross-Platform**: Works on Windows (x64/arm64), macOS (x64/arm64), and Linux (x64/arm64)
 
 ## Installation
 
 ### Download Binary
 
-Download the pre-built binary for your platform from [Releases](https://github.com/lennondotw/github-username-migrator/releases).
+Download the pre-built binary for your platform from [Releases](https://github.com/lennondotw/github-username-migrator/releases):
+
+| Platform | Architecture | Download |
+|----------|--------------|----------|
+| Linux | x64 | `github-username-migrator-linux-x64` |
+| Linux | arm64 | `github-username-migrator-linux-arm64` |
+| macOS | x64 | `github-username-migrator-darwin-x64` |
+| macOS | arm64 (Apple Silicon) | `github-username-migrator-darwin-arm64` |
+| Windows | x64 | `github-username-migrator-windows-x64.exe` |
+| Windows | arm64 | `github-username-migrator-windows-arm64.exe` |
 
 ### From Source
 
@@ -30,27 +41,38 @@ pnpm install
 # Run in development mode
 pnpm dev
 
-# Build
-pnpm build
+# Build standalone binary
+pnpm build:compile
 ```
 
 ## Usage
 
 ```bash
 # Run the CLI
-github-username-migrator
+./github-username-migrator
 
-# Or run directly with bun
+# Or run directly with bun (development)
 bun run src/index.tsx
 ```
 
-The tool will:
-1. Ask for your old GitHub username
-2. Ask for your new GitHub username
-3. Scan all git repositories in your home directory
-4. Display all repositories with matching remote URLs
-5. Ask for confirmation before making changes
-6. Migrate remote URLs and log all changes
+### Workflow
+
+1. **Enter old username**: Your previous GitHub username
+2. **Enter new username**: Your new GitHub username
+3. **Scanning**: The tool scans your home directory for git repositories
+4. **Review**: View all repositories that will be updated
+5. **Confirm**: Approve the changes (or cancel)
+6. **Migration**: URLs are updated with detailed progress
+7. **Complete**: Summary and log file location
+
+### Supported URL Formats
+
+The tool handles both SSH and HTTPS remote URLs:
+
+```
+git@github.com:olduser/repo.git     → git@github.com:newuser/repo.git
+https://github.com/olduser/repo.git → https://github.com/newuser/repo.git
+```
 
 ## Development
 
@@ -69,14 +91,17 @@ pnpm lint
 
 # Type check
 pnpm typecheck
+
+# Build for all platforms
+pnpm build:all
 ```
 
 ## Tech Stack
 
-- **Runtime**: Bun
+- **Runtime**: [Bun](https://bun.sh)
 - **Package Manager**: pnpm
 - **Language**: TypeScript
-- **TUI**: Ink (React for CLI)
+- **TUI Framework**: [Ink](https://github.com/vadimdemedes/ink) (React for CLI)
 - **Linting**: ESLint + Prettier
 - **Testing**: Bun Test
 
