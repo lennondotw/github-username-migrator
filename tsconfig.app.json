@@ -25,8 +25,9 @@
     "useUnknownInCatchVariables": true,
     // JSX support for Ink/React
     "jsx": "react-jsx",
-    // https://github.com/microsoft/TypeScript/issues/30925#issuecomment-483371766
-    "tsBuildInfoFile": "./node_modules/.cache/tsc-app/tsconfig.app.tsbuildinfo"
+    "rootDir": ".",
+    "outDir": "./dist/app",
+    "tsBuildInfoFile": "./dist/app/.tsbuildinfo"
   },
   "include": ["./src"],
   "exclude": ["**/__tests__/"]

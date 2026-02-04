@@ -25,7 +25,7 @@
     "test:coverage": "bun test --coverage",
     "test:update": "bun test --update-snapshots",
     "test:watch": "bun test --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --build tsconfig.json"
   },
   "dependencies": {
     "ink": "^6.0.0",

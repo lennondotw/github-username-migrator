@@ -78,7 +78,7 @@ export interface ScanOptions {
 /**
  * Check if a path is a git repository (contains .git directory)
  */
-async function isGitRepository(dirPath: string): Promise<boolean> {
+export async function isGitRepository(dirPath: string): Promise<boolean> {
   try {
     const gitPath = join(dirPath, '.git');
     const stats = await stat(gitPath);

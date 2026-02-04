@@ -71,6 +71,7 @@ describe('types', () => {
     const progress: ScanProgress = {
       currentPath: '/home/user/projects',
       directoriesScanned: 100,
+      skippedDirectories: 50,
       repositoriesFound: 5,
       matchedCount: 2,
     };
@@ -140,7 +141,13 @@ describe('types', () => {
       phase: 'scanning',
       oldUsername: 'old',
       newUsername: 'new',
-      progress: { currentPath: '', directoriesScanned: 0, repositoriesFound: 0, matchedCount: 0 },
+      progress: {
+        currentPath: '',
+        directoriesScanned: 0,
+        skippedDirectories: 0,
+        repositoriesFound: 0,
+        matchedCount: 0,
+      },
     };
     expect(scanning.phase).toBe('scanning');
   });

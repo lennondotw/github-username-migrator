@@ -15,7 +15,7 @@ export const UsernameInput: React.FC<UsernameInputProps> = ({ onSubmit }) => {
   const [oldUsername, setOldUsername] = useState('');
   const [newUsername, setNewUsername] = useState('');
 
-  useInput((input, key) => {
+  useInput((_input, key) => {
     if (key.return) {
       if (step === 'old' && oldUsername.trim()) {
         setStep('new');

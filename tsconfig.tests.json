@@ -22,8 +22,9 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "useUnknownInCatchVariables": true,
-    // https://github.com/microsoft/TypeScript/issues/30925#issuecomment-483371766
-    "tsBuildInfoFile": "./node_modules/.cache/tsc-tests/tsconfig.tests.tsbuildinfo"
+    "rootDir": ".",
+    "outDir": "./dist/tests",
+    "tsBuildInfoFile": "./dist/tests/.tsbuildinfo"
   },
   "include": ["./src/**/__tests__/"],
   "exclude": [],
